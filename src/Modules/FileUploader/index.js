@@ -29,7 +29,7 @@ export default class FileUploader extends React.Component<FileUploaderProps, {}>
   
   onSelectFile = (e: SyntheticInputEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files.length > 0) {
-      this.proceedFile(e.target.files[ 0 ]);
+      this.proceedFile(e.target.files[0]);
     }
   };
   

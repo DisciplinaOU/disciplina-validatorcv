@@ -1,4 +1,4 @@
-'use strict';
+
 
 const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
 const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
@@ -7,6 +7,9 @@ const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const config = require('./webpack.config.dev');
 const paths = require('./paths');
 const fs = require('fs');
+const getClientEnvironment = require('./env');
+
+const ENV = getClientEnvironment().raw;
 
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
@@ -82,7 +85,19 @@ module.exports = function(proxy, allowedHost) {
       disableDotRule: true,
     },
     public: allowedHost,
-    proxy,
+    proxy: {
+      ...proxy,
+      "/api/certificates": {
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
+        target: ENV.WITNESS_API_URL,
+      },
+      "/thegraph/*": {
+        changeOrigin: true,
+        target: `https://api.thegraph.com/subgraphs/name/${ENV.SUBGRAPH_NAME}/${ENV.SUBGRAPH_ID}`,
+        pathRewrite: { '^/thegraph': '' },
+      }
+    },
     before(app, server) {
       if (fs.existsSync(paths.proxySetup)) {
         // This registers user provided middleware for proxy reasons

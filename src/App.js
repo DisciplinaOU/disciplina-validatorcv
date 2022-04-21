@@ -9,6 +9,7 @@ import discLogo from './img/disc_logo.svg';
 import bgPng from './img/bg.png';
 import LanguageSelector from './Components/LanguageSelector';
 import CONSTANTS from './Constants';
+import { CVApi } from './api/cv';
 
 type AppType = {
   selectedLanguage: string,
@@ -27,24 +28,18 @@ class App extends Component<{}, AppType> {
   state: AppType = {
     ...AppInitialState
   };
-  
+
   componentDidMount(): void {
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || CONSTANTS.LANGUAGES.EN;
     this.changeLanguage(lang);
   }
-  
+
   changeLanguage = (lang: string) => {
     this.setState({ selectedLanguage: lang.toUpperCase() });
     window.history.pushState({}, '', `?lang=${lang}`);
   };
-  
-  fileUploadHandler = (file) => {
-    this.setState({
-      file: JSON.parse(file)
-    })
-  };
-  
+
   requestCheckAsync = async () => {
     try {
       const checkRes = await HttpService.put('/checkcv', this.state.file);
@@ -56,9 +51,32 @@ class App extends Component<{}, AppType> {
       this.setState({ isChecked: true });
     }
   };
-  
+
+  fileUploadHandler = async (file) => {
+    try {
+      const checkCVResponse = await CVApi.checkCV(file);
+      const [firstCV] = Object.values(checkCVResponse.fairCV.cv);
+      const [firstTx] = Object.values(firstCV);
+
+      const data = await CVApi.getBlockInfoByTxId(firstTx.txId);
+
+      const fileMerkleRoot = `0x${firstTx.val.root.root}`;
+      const blockMerkleRoot = data.privateBlockHeader && data.privateBlockHeader.merkleRoot;
+
+      this.setState({
+        isChecked: true,
+        isCvValid: blockMerkleRoot === fileMerkleRoot
+      })
+    } catch {
+      this.setState({
+        isChecked: true,
+        isCvValid: false
+      })
+    }
+  };
+
   clearForm = () => this.setState(state => ({ ...AppInitialState, selectedLanguage: state.selectedLanguage }));
-  
+
   render() {
     const { isChecked, isCvValid, file, selectedLanguage } = this.state;
     return (
@@ -67,8 +85,8 @@ class App extends Component<{}, AppType> {
           <LanguageSelector selectedLang={selectedLanguage} changeLanguage={this.changeLanguage} />
           <div className="container">
             <div className="logo">
-              <img className="logo__img" src={discLogo} alt="Disciplina"/><span
-              className="logo__text">{CONSTANTS.TRANSLATIONS.TITLE[selectedLanguage]}</span>
+              <img className="logo__img" src={discLogo} alt="Disciplina" /><span
+                className="logo__text">{CONSTANTS.TRANSLATIONS.TITLE[selectedLanguage]}</span>
             </div>
             <div className="pageLegend">
               <p className="pageLegend__text">{CONSTANTS.TRANSLATIONS.SUBTITLE[selectedLanguage]}</p>
@@ -76,6 +94,7 @@ class App extends Component<{}, AppType> {
             {!isChecked ?
               <FileUploader
                 file={file}
+                accept="pdf"
                 dispatchBaseFile={this.fileUploadHandler}
                 dispatchValidate={this.requestCheckAsync}
                 lang={selectedLanguage}
@@ -95,7 +114,7 @@ class App extends Component<{}, AppType> {
           </div>
         </div>
         <div className="bg">
-          <img src={bgPng} alt=""/>
+          <img src={bgPng} alt="" />
         </div>
         <Footer />
       </>

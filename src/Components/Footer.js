@@ -1,6 +1,8 @@
 // @flow
 import React from 'react';
 
+const currentYear = new Date().getFullYear();
+
 export const Footer = () => (
   <footer className="footer">
     <div className="container">
@@ -16,7 +18,7 @@ export const Footer = () => (
         <span className="footer__sep">&nbsp;</span>
         <div className="footer__address footerAddres">
           <p className="footer__p">Narva mnt 7-634, 10117, Kesklinna linnaosa, Tallinn, Estonia;</p>
-          <p className="footer__p">2018 &copy; Disciplina OÜ</p>
+          <p className="footer__p">{currentYear} &copy; Disciplina OÜ</p>
         </div>
         <span className="footer__sep">&nbsp;</span>
         <div className="footer__soc socials">
