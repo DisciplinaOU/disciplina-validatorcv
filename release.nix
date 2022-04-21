@@ -2,12 +2,11 @@
 , buildYarnPackage
 , parallel
 , brotli
-, constGitIgnore
 }:
 
 buildYarnPackage {
   WITNESS_API_URL = witnessUrl;
-  src = constGitIgnore "validatorcv" ./. [];
+  src = ./.;
 
   buildInputs = [ parallel brotli ];
 
