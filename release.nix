@@ -1,4 +1,6 @@
 { witnessUrl ? null
+, subgraphName ? "hbb228"
+, subgraphId ? "disciplina-indexer"
 , buildYarnPackage
 , parallel
 , brotli
@@ -6,6 +8,8 @@
 
 buildYarnPackage {
   WITNESS_API_URL = witnessUrl;
+  SUBGRAPH_NAME = subgraphName;
+  SUBGRAPH_ID = subgraphId;
   src = ./.;
 
   buildInputs = [ parallel brotli ];
