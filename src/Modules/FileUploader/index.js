@@ -53,7 +53,7 @@ export default class FileUploader extends React.Component<FileUploaderProps, {}>
     const reader = new FileReader();
     reader.onload = () => this.onFileLoaded(reader.result);
     reader.onerror = error => this.onErrorFileLoader(error);
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
     this.setState({ fileName: file.name });
   };
   
