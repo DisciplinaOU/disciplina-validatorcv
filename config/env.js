@@ -63,8 +63,7 @@ const REACT_APP = /^REACT_APP_/i;
 const DEV_ENV = {
   NODE_ENV: 'development',
   WITNESS_API_URL: 'http://multi-educator.web3-dev.disciplina.io',
-  SUBGRAPH_NAME: 'hbb228',
-  SUBGRAPH_ID: 'disciplina-indexer'
+  SUBGRAPH_API_URL: 'https://api.thegraph.com/subgraphs/name/hbb228/disciplina-indexer',
 }
 
 function getClientEnvironment(publicUrl) {
@@ -85,8 +84,7 @@ function getClientEnvironment(publicUrl) {
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
         WITNESS_API_URL: process.env.WITNESS_API_URL || DEV_ENV.WITNESS_API_URL,
-        SUBGRAPH_NAME: process.env.SUBGRAPH_NAME || DEV_ENV.SUBGRAPH_NAME,
-        SUBGRAPH_ID: process.env.SUBGRAPH_ID || DEV_ENV.SUBGRAPH_ID 
+        SUBGRAPH_API_URL: process.env.SUBGRAPH_API_URL || DEV_ENV.SUBGRAPH_API_URL,
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
