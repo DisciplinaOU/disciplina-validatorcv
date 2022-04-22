@@ -1,6 +1,5 @@
 { witnessUrl ? null
-, subgraphName ? "hbb228"
-, subgraphId ? "disciplina-indexer"
+, subgraphApiUrl ? "https://api.thegraph.com/subgraphs/name/hbb228/disciplina-indexer"
 , buildYarnPackage
 , parallel
 , brotli
@@ -8,8 +7,7 @@
 
 buildYarnPackage {
   WITNESS_API_URL = witnessUrl;
-  SUBGRAPH_NAME = subgraphName;
-  SUBGRAPH_ID = subgraphId;
+  SUBGRAPH_API_URL = subgraphApiUrl;
   src = ./.;
 
   buildInputs = [ parallel brotli ];
