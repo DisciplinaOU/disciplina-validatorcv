@@ -61,7 +61,6 @@ class App extends Component<{}, AppType> {
       if (!checkCVResponse.checkResult.isValid) throw Error('Invalid CV')
 
       const [firstCV] = Object.values(checkCVResponse.fairCV.cv);
-      const [txAddress] = Object.keys(checkCVResponse.fairCV.cv);
       const [firstTx] = Object.values(firstCV);
 
       const data = await CVApi.getBlockInfoByTxId(firstTx.txId);
@@ -72,7 +71,7 @@ class App extends Component<{}, AppType> {
       this.setState({
         isChecked: true,
         isCvValid: blockMerkleRoot === fileMerkleRoot,
-        txAddress,
+        txAddress: firstTx.txId,
       });
     } catch {
       this.setState({
@@ -120,7 +119,7 @@ class App extends Component<{}, AppType> {
                     </button>
 
                     {isChecked && isCvValid && (
-                      <a target="_blank" rel="noopener noreferrer" href={`${process.env.ETHERSCAN_BASE_URL}/address/${txAddress}`}>
+                      <a target="_blank" rel="noopener noreferrer" href={`${process.env.ETHERSCAN_BASE_URL}/tx/${txAddress}`}>
                         <button
                           className="btn"
                           type="button"
