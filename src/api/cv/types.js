@@ -15,5 +15,8 @@ export type CheckCVResponse = {
 export type GetBlockInfoByTxIdResponse = {
   privateBlockHeader: {
     merkleRoot: string,
+  },
+  checkResult: {
+    isValid: boolean
   }
 }

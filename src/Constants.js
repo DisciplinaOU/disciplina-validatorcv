@@ -66,6 +66,12 @@ const CONSTANTS = {
       ZH: '检查另一份FairCV',
       KR: '다른 FairCV 체크하기'
     },
+    SHOW_TRANSACTION: {
+      EN: 'Show transaction',
+      JP: 'トランザクションを表示',
+      ZH: '显示交易',
+      KR: '거래 표시'
+    },
     NOT_VALID: {
       JP: 'この履歴書（FairCV）は検証されていません',
       EN: 'This FairCV is not valid',
@@ -79,7 +85,7 @@ const CONSTANTS = {
       KR: '이 FairCV는 유효합니다'
     }
   }
-  
+
 };
 
 export default CONSTANTS;

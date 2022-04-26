@@ -64,6 +64,7 @@ const DEV_ENV = {
   NODE_ENV: 'development',
   WITNESS_API_URL: 'http://multi-educator.web3-dev.disciplina.io',
   SUBGRAPH_API_URL: 'https://api.thegraph.com/subgraphs/name/hbb228/disciplina-indexer',
+  ETHERSCAN_BASE_URL: 'https://rinkeby.etherscan.io'
 }
 
 function getClientEnvironment(publicUrl) {
@@ -85,6 +86,7 @@ function getClientEnvironment(publicUrl) {
         PUBLIC_URL: publicUrl,
         WITNESS_API_URL: process.env.WITNESS_API_URL || DEV_ENV.WITNESS_API_URL,
         SUBGRAPH_API_URL: process.env.SUBGRAPH_API_URL || DEV_ENV.SUBGRAPH_API_URL,
+        ETHERSCAN_BASE_URL: process.env.ETHERSCAN_BASE_URL || DEV_ENV.ETHERSCAN_BASE_URL,
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin

@@ -15,13 +15,15 @@ type AppType = {
   selectedLanguage: string,
   file: any,
   isChecked: boolean,
-  isCvValid: boolean
+  isCvValid: boolean,
+  txAddress: null | string,
 }
 
 const AppInitialState = {
   file: null,
   isChecked: false,
-  isCvValid: false
+  isCvValid: false,
+  txAddress: null
 };
 
 class App extends Component<{}, AppType> {
@@ -55,7 +57,11 @@ class App extends Component<{}, AppType> {
   fileUploadHandler = async (file) => {
     try {
       const checkCVResponse = await CVApi.checkCV(file);
+
+      if (!checkCVResponse.checkResult.isValid) throw Error('Invalid CV')
+
       const [firstCV] = Object.values(checkCVResponse.fairCV.cv);
+      const [txAddress] = Object.keys(checkCVResponse.fairCV.cv);
       const [firstTx] = Object.values(firstCV);
 
       const data = await CVApi.getBlockInfoByTxId(firstTx.txId);
@@ -65,8 +71,9 @@ class App extends Component<{}, AppType> {
 
       this.setState({
         isChecked: true,
-        isCvValid: blockMerkleRoot === fileMerkleRoot
-      })
+        isCvValid: blockMerkleRoot === fileMerkleRoot,
+        txAddress,
+      });
     } catch {
       this.setState({
         isChecked: true,
@@ -78,7 +85,7 @@ class App extends Component<{}, AppType> {
   clearForm = () => this.setState(state => ({ ...AppInitialState, selectedLanguage: state.selectedLanguage }));
 
   render() {
-    const { isChecked, isCvValid, file, selectedLanguage } = this.state;
+    const { isChecked, isCvValid, file, selectedLanguage, txAddress } = this.state;
     return (
       <>
         <div className="page">
@@ -100,15 +107,42 @@ class App extends Component<{}, AppType> {
                 lang={selectedLanguage}
               />
               : <section className="condition">
-                <CheckResult isValid={isCvValid} lang={selectedLanguage} />
-                <button
-                  className="btn btn--back condition__back"
-                  type="button"
-                  name="button"
-                  onClick={this.clearForm}
-                >
-                  {CONSTANTS.TRANSLATIONS.CHECK_ANOTHER[selectedLanguage]}
-                </button>
+                <CheckResult txAddress={txAddress} isValid={isCvValid} lang={selectedLanguage} />
+                {isCvValid ? (
+                  <div className='buttons-group'>
+                    <button
+                      className="btn btn--back condition__back"
+                      type="button"
+                      name="button"
+                      onClick={this.clearForm}
+                    >
+                      {CONSTANTS.TRANSLATIONS.CHECK_ANOTHER[selectedLanguage]}
+                    </button>
+
+                    {isChecked && isCvValid && (
+                      <a target="_blank" rel="noopener noreferrer" href={`${process.env.ETHERSCAN_BASE_URL}/address/${txAddress}`}>
+                        <button
+                          className="btn"
+                          type="button"
+                          name="button"
+                          onClick={this.clearForm}
+                        >
+                          {CONSTANTS.TRANSLATIONS.SHOW_TRANSACTION[selectedLanguage]}
+                        </button>
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    className="btn btn--back condition__back"
+                    type="button"
+                    name="button"
+                    onClick={this.clearForm}
+                  >
+                    {CONSTANTS.TRANSLATIONS.CHECK_ANOTHER[selectedLanguage]}
+                  </button>
+
+                )}
               </section>
             }
           </div>
