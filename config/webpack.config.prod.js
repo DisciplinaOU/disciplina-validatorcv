@@ -329,6 +329,11 @@ module.exports = {
               babelrc: false,
               configFile: false,
               compact: false,
+              plugins: [
+                [
+                  require.resolve('@babel/plugin-proposal-class-properties'),
+                ], 
+              ],
               presets: [
                 [
                   require.resolve("@babel/preset-env"),
