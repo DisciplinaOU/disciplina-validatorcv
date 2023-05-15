@@ -12,7 +12,7 @@ import axios from 'axios';
 import type { AxiosInstance } from 'axios';
 import type { Error, IHttpService, ResponseType } from './Http.type';
 
-const BASE = `/api/certificates/v1`;
+const BASE = `${process.env.WITNESS_API_URL}/api/certificates/v1`;
 
 class HttpService implements IHttpService {
   httpService: typeof axios;

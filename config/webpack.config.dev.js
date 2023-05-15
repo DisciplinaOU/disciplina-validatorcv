@@ -234,6 +234,9 @@ module.exports = {
                   require.resolve('@babel/plugin-proposal-object-rest-spread'),
                   { 'useBuiltIns': true }
                 ],
+                [
+                  require.resolve('@babel/plugin-proposal-class-properties'),
+                ], 
               ],
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
@@ -253,6 +256,11 @@ module.exports = {
               babelrc: false,
               configFile: false,
               compact: false,
+              plugins: [
+                [
+                  require.resolve('@babel/plugin-proposal-class-properties'),
+                ], 
+              ],
               presets: [
                 [
                   require.resolve("@babel/preset-env"),
@@ -264,7 +272,7 @@ module.exports = {
                   require.resolve('babel-preset-react-app/dependencies'),
                   { helpers: true },
                 ],
-              ],
+             ],
               cacheDirectory: true,
               // Don't waste time on Gzipping the cache
               cacheCompression: false,

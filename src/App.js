@@ -11,6 +11,8 @@ import LanguageSelector from './Components/LanguageSelector';
 import CONSTANTS from './Constants';
 import { CVApi } from './api/cv';
 
+console.log(process.env);
+
 type AppType = {
   selectedLanguage: string,
   file: any,
@@ -57,24 +59,43 @@ class App extends Component<{}, AppType> {
   fileUploadHandler = async (file) => {
     try {
       const checkCVResponse = await CVApi.checkCV(file);
+      const { checkResult: { isValid }, fairCV: { cv } } = checkCVResponse;
 
-      if (!checkCVResponse.checkResult.isValid) throw Error('Invalid CV')
+      if (!isValid) throw Error('Invalid CV')
 
-      const [firstCV] = Object.values(checkCVResponse.fairCV.cv);
-      const [txAddress] = Object.keys(checkCVResponse.fairCV.cv);
-      const [firstTx] = Object.values(firstCV);
+      const txIds = [];
 
-      const data = await CVApi.getBlockInfoByTxId(firstTx.txId);
+      for (const senderAddr of Object.keys(cv)) {
+        const blocks = cv[senderAddr];
 
-      const fileMerkleRoot = `0x${firstTx.val.root.root}`;
-      const blockMerkleRoot = data.privateBlockHeader && data.privateBlockHeader.merkleRoot;
+        for (const blkHash of Object.keys(blocks)) {
+          const { txId, val: { root } } = blocks[blkHash];
+
+          const { merkleRoot, transactionsNum, sender } = await CVApi.getBlockInfoByTxId(txId);
+          const cvRoot = `0x${root.root}`
+
+          if (sender !== senderAddr) {
+            throw Error(`Invalid CV: sender address (${sender}) is not equal to the one in the CV (${senderAddr})`);
+          }
+
+          if (cvRoot !== merkleRoot) {
+            throw Error(`Invalid CV: merkle root in CV (${cvRoot}) not equal to the one in the transaction (${merkleRoot})`);
+          }
+
+          if (root.transactionNum !== transactionsNum) throw Error('Invalid CV: transaction number is not equal to the one in the block');
+
+          txIds.push(txId);
+        }
+
+      }
 
       this.setState({
         isChecked: true,
-        isCvValid: blockMerkleRoot === fileMerkleRoot,
-        txAddress,
+        isCvValid: true,
+        txAddress: txIds[0],
       });
-    } catch {
+    } catch (error) {
+      console.log(error);
       this.setState({
         isChecked: true,
         isCvValid: false
@@ -120,7 +141,7 @@ class App extends Component<{}, AppType> {
                     </button>
 
                     {isChecked && isCvValid && (
-                      <a target="_blank" rel="noopener noreferrer" href={`${process.env.ETHERSCAN_BASE_URL}/address/${txAddress}`}>
+                      <a target="_blank" rel="noopener noreferrer" href={`${process.env.ETHERSCAN_BASE_URL}/tx/${txAddress}`}>
                         <button
                           className="btn"
                           type="button"

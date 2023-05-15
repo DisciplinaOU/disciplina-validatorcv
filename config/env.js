@@ -62,12 +62,14 @@ const REACT_APP = /^REACT_APP_/i;
 
 const DEV_ENV = {
   NODE_ENV: 'development',
-  WITNESS_API_URL: 'http://multi-educator.web3-dev.disciplina.io',
-  SUBGRAPH_API_URL: 'https://api.thegraph.com/subgraphs/name/hbb228/disciplina-indexer',
-  ETHERSCAN_BASE_URL: 'https://rinkeby.etherscan.io'
+  DSCP_CONTRACT_ADDR: '0xd25dB49fa9f9b27Ffe7B016395CEC704Ca650a8F',
+  WITNESS_API_URL: 'https://validator.watches.disciplina.io',
+  ETHERSCAN_NETWORK: 'sepolia',
 }
 
 function getClientEnvironment(publicUrl) {
+  const etherscanNetwork = process.env.ETHERSCAN_NETWORK || DEV_ENV.ETHERSCAN_NETWORK;
+
   const raw = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
     .reduce(
@@ -85,8 +87,8 @@ function getClientEnvironment(publicUrl) {
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
         WITNESS_API_URL: process.env.WITNESS_API_URL || DEV_ENV.WITNESS_API_URL,
-        SUBGRAPH_API_URL: process.env.SUBGRAPH_API_URL || DEV_ENV.SUBGRAPH_API_URL,
-        ETHERSCAN_BASE_URL: process.env.ETHERSCAN_BASE_URL || DEV_ENV.ETHERSCAN_BASE_URL,
+        ETHERSCAN_NETWORK: etherscanNetwork,
+        ETHERSCAN_BASE_URL: `https://${etherscanNetwork}.etherscan.io`,
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
